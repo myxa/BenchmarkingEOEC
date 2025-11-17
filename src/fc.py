@@ -57,7 +57,8 @@ def get_connectome(timeseries: np.ndarray,
 def graphicalLasso(data, L1=0.03):
     '''
     !code by Peterson, K. L., Sanchez-Romero, R., Mill, R. D., & Cole, M. W. (2023). 
-    Regularized partial correlation provides reliable functional connectivity estimates while correcting for widespread confounding. 
+    Regularized partial correlation provides reliable functional connectivity estimates 
+    while correcting for widespread confounding. 
     In bioRxiv (p. 2023.09.16.558065). https://doi.org/10.1101/2023.09.16.558065 
 
     https://github.com/ColeLab/ActflowToolbox/blob/master/connectivity_estimation/graphicalLassoCV.py
@@ -69,7 +70,8 @@ def graphicalLasso(data, L1=0.03):
         L1 : L1 (lambda1) hyperparameter value
     OUTPUT:
         glassoParCorr : regularized partial correlation coefficients (i.e., FC matrix)
-        prec : precision matrix, where entries are not yet transformed into partial correlations (used to compute loglikelihood)
+        prec : precision matrix, where entries are not yet transformed into partial correlations 
+        (used to compute loglikelihood)
     '''
 
     nNodes = data.shape[0] # for one person 

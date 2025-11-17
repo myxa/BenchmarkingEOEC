@@ -1,1 +1,1 @@
-Code for Benchmarking fMRI connectivity pipelines for classification
+Code for the paper Medvedeva, T., Knyazeva, I., Masharipov, R., Korotkov, A., Cherednichenko, D., & Kireev, M. (2025). Benchmarking resting state fMRI connectivity pipelines for classification: Robust accuracy despite processing variability in cross-site eye state prediction. Neuroscience. https://doi.org/10.1101/2025.10.20.683049

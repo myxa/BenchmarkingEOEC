@@ -1,6 +1,6 @@
 import numpy as np
-from src.fc import get_connectome
-from src.data_utils import load_data
+from benchmarking.fc import get_connectome
+from benchmarking.data_utils import load_data
 from nilearn.connectome import sym_matrix_to_vec
 import pandas as pd
 

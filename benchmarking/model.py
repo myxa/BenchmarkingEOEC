@@ -83,3 +83,24 @@ class LogRegPCA:
 
         return cm, acc, f1
     
+
+def cross_validation(model, x, y, k=5):
+    """
+    Perform k-fold cross-validation on the given data.
+
+    Parameters
+    ----------
+    model : object
+        The model to be used for cross-validation.
+    x : array-like
+        The data to be used for cross-validation.
+    y : array-like
+        The labels corresponding to the data.
+    k : int, default=5
+        The number of folds to be used for cross-validation.
+
+    Returns
+    -------
+    accuracy : float
+    """
+    pass

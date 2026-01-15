@@ -1,0 +1,77 @@
+from nilearn.maskers import NiftiMasker, NiftiLabelsMasker
+import nibabel as nib
+import numpy as np
+
+
+def new_mask_gsr(data, path_to_save, thr=0.6):
+
+    for sub in data.sub_labels:
+        try:
+            # read func and mask files 
+            func_files = data.get_func_files(sub)[0]
+            mask_files = data.get_mask_files(sub)[0]
+            # get global signal from confounds file
+            gs = data.get_confounds_one_subject(sub)[0].global_signal.values
+
+            mskr = NiftiMasker(mask_img=mask_files)
+            mskr.fit(func_files)
+            tr = mskr.transform(func_files)
+            
+            # смотрим сигнал вокселя в определенный момент времени
+            # если он больше глобального сигнала, то оставляем
+            a = np.array([tr[i] > (gs[i] * thr) for i in range(120)])
+            t = tr * a
+
+            out_mask = mskr.inverse_transform(np.sum(t, axis=0) != 0)
+            nib.save(out_mask, f'{path_to_save}/sub-{sub}_run-1_new_mask.nii.gz')
+        
+        except IndexError:
+            print(sub)
+            continue
+
+def coverage(atlas, mask):
+    atlas_img = nib.load(atlas.atlas_path)
+    masker_labels = atlas.atlas_labels
+    
+
+    # все что не ноль то один
+    # создаем бинарный атлас, чтобы потом считтать воксели
+    atlas_img_bin = nib.Nifti1Image(
+        (atlas_img.get_fdata() > 0).astype(np.uint8), 
+        atlas_img.affine, 
+        atlas_img.header,)
+
+
+    sum_masker_masked = NiftiLabelsMasker(
+                            labels_img=atlas_img,
+                            labels=masker_labels,
+                            background_label=0,
+                            mask_img=mask,
+                            smoothing_fwhm=None,
+                            standardize=False,
+                            strategy="sum",
+                            resampling_target='data',  # !!!!!!!!!!!!!!!!!!!! check resampling 
+                            )
+
+    # no mask image here !!
+    sum_masker_unmasked = NiftiLabelsMasker(
+                            labels_img=atlas_img,
+                            labels=masker_labels,
+                            background_label=0,
+                            smoothing_fwhm=None,
+                            standardize=False,
+                            strategy="sum", # sum to see number of 
+                            resampling_target='data',
+                            )
+
+
+    # вместо мозга передаем бинаризованый атлас, 
+    # и считаем сколько вокселей попадает в маску (суммируем количество вокселей в рои)
+    n_voxels_in_masked_parcels = sum_masker_masked.fit_transform(atlas_img_bin)
+    # считаем сколько всего вокселей в рои в атласе
+    n_voxels_in_parcels = sum_masker_unmasked.fit_transform(atlas_img_bin)
+    # процент вокселей в маске
+    parcel_coverage = np.squeeze(n_voxels_in_masked_parcels / n_voxels_in_parcels)
+
+
+    

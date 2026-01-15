@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from src.metrics import icc_matrix, strategies_comparison
+from benchmarking.metrics import icc_matrix, strategies_comparison
 from nilearn.connectome import vec_to_sym_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns

@@ -1,0 +1,7 @@
+data_path: /home/tm/benchmarking_data
+site: ihb
+atlases: [AAL]
+fc_type: tangent
+use_coverage_mask: true
+coverage_threshold: 0.1
+output_dir: /home/tm/benchmarking_data/results

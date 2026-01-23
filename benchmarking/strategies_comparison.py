@@ -32,8 +32,9 @@ from nilearn.connectome import sym_matrix_to_vec
 import yaml
 from tqdm import tqdm
 
-from benchmarking.project import resolve_data_root
-from benchmarking.fc import ConnectomeTransformer
+from data_utils.paths import resolve_data_root
+from data_utils.fc import ConnectomeTransformer
+from data_utils.hcpex import preprocess_hcpex_timeseries
 
 
 # =============================================================================
@@ -118,8 +119,15 @@ def load_fc_for_strategies_comparison(
             ts = ts[:, :, :, session_idx]
         
         # Apply coverage mask
-        if coverage_mask is not None:
+        if coverage_mask is not None and atlas != "HCPex":
             ts = ts[:, :, coverage_mask]
+
+        if atlas == "HCPex":
+            hcpex_mask_pth = data_root / 'coverage' / f"hcp_mask.npy"
+            hcpex_coverage_pth = data_root / 'coverage'
+            ts = preprocess_hcpex_timeseries(ts, site=site, 
+                                             mask_path=hcpex_mask_pth,
+                                             coverage_dir=hcpex_coverage_pth)
 
         
         transformer = ConnectomeTransformer(
@@ -239,6 +247,21 @@ def compute_strategies_comparison(
 
     return pd.DataFrame(data=out, columns=keys, index=keys)
 
+
+def load_hcpex_mask(
+    data_path: Optional[str] = None,
+) -> np.ndarray:
+    """Load HCPex mask."""
+    data_root = resolve_data_root(data_path)
+    mask = data_root / "coverage" / f"hcp_mask.npy"
+    
+    if not mask.exists():
+        raise FileNotFoundError(f"Coverage file not found: {mask}")
+    
+    mask = np.load(mask).astype(float)
+    #np.loadtxtchina_skipped_rois_HCPex.txt
+
+    return mask
 
 def load_coverage_mask(
     atlas: str,

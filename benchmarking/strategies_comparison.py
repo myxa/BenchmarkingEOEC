@@ -279,7 +279,7 @@ def run_strategies_comparison_from_config(config: dict) -> pd.DataFrame:
         Small summary table with saved files (one row per atlas).
     """
     site = config.get("site", "ihb")
-    data_path = config.get("data_path")
+    data_path = Path(config.get("data_path")).expanduser().resolve()
     atlases = config.get("atlases", ["AAL", "Schaefer200", "Brainnetome", "HCPex"])
 
     fc_type = config.get("fc_type", None)
@@ -289,7 +289,7 @@ def run_strategies_comparison_from_config(config: dict) -> pd.DataFrame:
     use_coverage_mask = config.get("use_coverage_mask", True)
     coverage_threshold = config.get("coverage_threshold", 0.1)
 
-    output_dir = Path(config.get("output_dir", "strategies_comparison")).expanduser()
+    output_dir = Path(config.get("output_dir", "strategies_comparison")).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Pre-load coverage masks
@@ -320,7 +320,8 @@ def run_strategies_comparison_from_config(config: dict) -> pd.DataFrame:
                 data_path=data_path,
             )
 
-            out_file = output_dir / f"{site}_{atlas}_{fc_type}_strategies_comparison.csv"
+            out_file = output_dir / site / atlas / f"{site}_{atlas}_{fc_type}_strategies_comparison.csv"
+            out_file.parent.mkdir(parents=True, exist_ok=True)
             df_mat.to_csv(out_file, index=True)
 
             summary_rows.append({
@@ -369,11 +370,11 @@ def main():
     args = parser.parse_args()
     
     # Load config
-    config_path = Path(args.config).expanduser()
+    config_path = Path(args.config).expanduser().resolve()
     if not config_path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
     
-    with open(config_path) as f:
+    with open(config_path, encoding="utf-8") as f:
         config = yaml.safe_load(f)
     
     # Override output if specified
@@ -391,9 +392,6 @@ def main():
     df = run_strategies_comparison_from_config(config)
     
     # Save results
-    output_path = Path(config.get('output_dir', 'results/strategies_comparison.csv')).expanduser()
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(output_path)
     
     print("\nDone!")
 

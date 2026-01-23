@@ -1,7 +1,7 @@
-data_path: /home/tm/benchmarking_data
+data_path: "C:\\Users\\ТМ\\YandexDisk\\IHB\\OpenCloseBenchmark_data"
 site: ihb
-atlases: [AAL]
-fc_type: tangent
+atlases: [AAL, Schaefer200]
+fc_type: partial
 use_coverage_mask: true
 coverage_threshold: 0.1
-output_dir: /home/tm/benchmarking_data/results
+output_dir: "C:\\Users\\ТМ\\Desktop\\results"
